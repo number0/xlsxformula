@@ -13,7 +13,7 @@ func TestOperatorsAndNumbers(t *testing.T) {
 		t.Errorf("Parse() should return 3 tokens, but %d tokens", len(tokens))
 		return
 	}
-	if tokens[0].Type != Integer || tokens[1].Type != Plus || tokens[2].Type != Integer {
+	if tokens[0].Type != Integer || tokens[1].Type != Operator || tokens[2].Type != Integer {
 		t.Errorf("Node type is wrong: %s %s %s", tokens[0].Type.String(), tokens[1].Type.String(), tokens[2].Type.String())
 	}
 }
@@ -30,7 +30,7 @@ func TestOperatorsAndFloats(t *testing.T) {
 	if tokens[0].Type != Float || tokens[2].Type != Float || tokens[4].Type != Float || tokens[6].Type != Float {
 		t.Errorf("Node type is wrong: %s %s %s %s", tokens[0].Type.String(), tokens[2].Type.String(), tokens[4].Type.String(), tokens[6].Type.String())
 	}
-	if tokens[1].Type != Minus || tokens[3].Type != Multiply || tokens[5].Type != Division {
+	if tokens[1].Type != Operator || tokens[3].Type != Operator || tokens[5].Type != Operator {
 		t.Errorf("Node type is wrong: %s %s %s", tokens[1].Type.String(), tokens[3].Type.String(), tokens[5].Type.String())
 	}
 }
@@ -44,7 +44,7 @@ func TestJoinOperatorAndString(t *testing.T) {
 		t.Errorf("Parse() should return 3 tokens, but %d tokens", len(tokens))
 		return
 	}
-	if tokens[0].Type != String || tokens[1].Type != Join || tokens[2].Type != String {
+	if tokens[0].Type != String || tokens[1].Type != Operator || tokens[2].Type != String {
 		t.Errorf("Node type is wrong: %s %s %s", tokens[0].Type.String(), tokens[1].Type.String(), tokens[2].Type.String())
 	}
 }
@@ -58,7 +58,7 @@ func TestRangeAndName(t *testing.T) {
 		t.Errorf("Parse() should return 3 tokens, but %d tokens", len(tokens))
 		return
 	}
-	if tokens[0].Type != Range || tokens[1].Type != Power || tokens[2].Type != Name {
+	if tokens[0].Type != Range || tokens[1].Type != Operator || tokens[2].Type != Name {
 		t.Errorf("Node type is wrong: %s %s %s", tokens[0].Type.String(), tokens[1].Type.String(), tokens[2].Type.String())
 	}
 }
@@ -72,7 +72,7 @@ func TestCompare_1(t *testing.T) {
 		t.Errorf("Parse() should return 3 tokens, but %d tokens", len(tokens))
 		return
 	}
-	if tokens[1].Type != Compare || tokens[1].Text != "=" {
+	if tokens[1].Type != Comparator || tokens[1].Text != "=" {
 		t.Errorf("Compare operator is wrong: %s %s", tokens[1].Type.String(), tokens[1].Text)
 	}
 }
@@ -86,7 +86,7 @@ func TestCompare_2(t *testing.T) {
 		t.Errorf("Parse() should return 3 tokens, but %d tokens", len(tokens))
 		return
 	}
-	if tokens[1].Type != Compare || tokens[1].Text != "<>" {
+	if tokens[1].Type != Comparator || tokens[1].Text != "<>" {
 		t.Errorf("Compare operator is wrong: %s %s", tokens[1].Type.String(), tokens[1].Text)
 	}
 }
@@ -100,7 +100,7 @@ func TestCompare_3(t *testing.T) {
 		t.Errorf("Parse() should return 3 tokens, but %d tokens", len(tokens))
 		return
 	}
-	if tokens[1].Type != Compare || tokens[1].Text != "<" {
+	if tokens[1].Type != Comparator || tokens[1].Text != "<" {
 		t.Errorf("Compare operator is wrong: %s %s", tokens[1].Type.String(), tokens[1].Text)
 	}
 }
@@ -114,7 +114,7 @@ func TestCompare_4(t *testing.T) {
 		t.Errorf("Parse() should return 3 tokens, but %d tokens", len(tokens))
 		return
 	}
-	if tokens[1].Type != Compare || tokens[1].Text != ">" {
+	if tokens[1].Type != Comparator || tokens[1].Text != ">" {
 		t.Errorf("Compare operator is wrong: %s %s", tokens[1].Type.String(), tokens[1].Text)
 	}
 }
@@ -128,7 +128,7 @@ func TestCompare_5(t *testing.T) {
 		t.Errorf("Parse() should return 3 tokens, but %d tokens", len(tokens))
 		return
 	}
-	if tokens[1].Type != Compare || tokens[1].Text != "<=" {
+	if tokens[1].Type != Comparator || tokens[1].Text != "<=" {
 		t.Errorf("Compare operator is wrong: %s %s", tokens[1].Type.String(), tokens[1].Text)
 	}
 }
@@ -142,7 +142,7 @@ func TestCompare_6(t *testing.T) {
 		t.Errorf("Parse() should return 3 tokens, but %d tokens", len(tokens))
 		return
 	}
-	if tokens[1].Type != Compare || tokens[1].Text != ">=" {
+	if tokens[1].Type != Comparator || tokens[1].Text != ">=" {
 		t.Errorf("Compare operator is wrong: %s %s", tokens[1].Type.String(), tokens[1].Text)
 	}
 }

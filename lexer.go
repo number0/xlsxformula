@@ -9,22 +9,18 @@ import (
 type TokenType int
 
 const (
-	Integer TokenType = iota // integer
-	Float                    // floating number
-	String                   // double quoted string
-	Bool                     // TRUE/FALSE
-	Plus                     // +
-	Minus                    // -
-	Multiply                 // *
-	Division                 // /
-	Power                    // ^
-	Join                     // &
-	LParen                   // (
-	RParen                   // )
-	Comma                    // ,
-	Compare                  // =, <>, <, >, <=, >=
-	Name                     // function name, named range etc
-	Range                    // A2:B3
+	Integer    TokenType = iota // integer
+	Float                       // floating number
+	String                      // double quoted string
+	Bool                        // TRUE/FALSE
+	Operator                    // +, -, *, /, ^, &
+	LParen                      // (
+	RParen                      // )
+	Comma                       // ,
+	Comparator                  // =, <>, <, >, <=, >=
+	Name                        // function name, named range etc
+	Range                       // A2:B3
+	Null
 )
 
 func (tt TokenType) String() string {
@@ -35,25 +31,17 @@ func (tt TokenType) String() string {
 		return "Float"
 	case String:
 		return "String"
-	case Plus:
-		return "Plus"
-	case Minus:
-		return "Minus"
-	case Multiply:
-		return "Multiply"
-	case Division:
-		return "Division"
-	case Power:
-		return "Power"
-	case Join:
-		return "Join"
+	case Bool:
+		return "Bool"
+	case Operator:
+		return "Operator"
 	case LParen:
 		return "LParen"
 	case RParen:
 		return "RParen"
 	case Comma:
 		return "Comma"
-	case Compare:
+	case Comparator:
 		return "Compare"
 	case Name:
 		return "Name"
@@ -91,15 +79,15 @@ var symbolSeparator map[rune]bool = map[rune]bool{
 }
 
 var singleCharNode map[rune]TokenType = map[rune]TokenType{
-	'+': Plus,
-	'-': Minus,
-	'*': Multiply,
-	'/': Division,
-	'^': Power,
-	'&': Join,
+	'+': Operator,
+	'-': Operator,
+	'*': Operator,
+	'/': Operator,
+	'^': Operator,
+	'&': Operator,
 	'(': LParen,
 	')': RParen,
-	'=': Compare,
+	'=': Comparator,
 	',': Comma,
 }
 
@@ -140,7 +128,7 @@ func Tokenize(formula string) ([]*Token, error) {
 				switch source[index+1] {
 				case '>':
 					tokens = append(tokens, &Token{
-						Type: Compare,
+						Type: Comparator,
 						Text: "<>",
 						Line: line,
 						Col:  index - lineHead + 1,
@@ -149,7 +137,7 @@ func Tokenize(formula string) ([]*Token, error) {
 					continue
 				case '=':
 					tokens = append(tokens, &Token{
-						Type: Compare,
+						Type: Comparator,
 						Text: "<=",
 						Line: line,
 						Col:  index - lineHead + 1,
@@ -159,7 +147,7 @@ func Tokenize(formula string) ([]*Token, error) {
 				}
 			}
 			tokens = append(tokens, &Token{
-				Type: Compare,
+				Type: Comparator,
 				Text: "<",
 				Line: line,
 				Col:  index - lineHead + 1,
@@ -169,7 +157,7 @@ func Tokenize(formula string) ([]*Token, error) {
 		case '>':
 			if index+1 < len(source) && source[index+1] == '=' {
 				tokens = append(tokens, &Token{
-					Type: Compare,
+					Type: Comparator,
 					Text: ">=",
 					Line: line,
 					Col:  index - lineHead + 1,
@@ -177,7 +165,7 @@ func Tokenize(formula string) ([]*Token, error) {
 				index += 2
 			} else {
 				tokens = append(tokens, &Token{
-					Type: Compare,
+					Type: Comparator,
 					Text: ">",
 					Line: line,
 					Col:  index - lineHead + 1,

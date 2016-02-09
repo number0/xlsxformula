@@ -11,13 +11,24 @@ Usage
 
 * ``xlsxformula.Tokenize(formula string) ([]*xlsxformula.Token, error)``
 
-  Split
+  Split Excel formula into Token.
 
   .. code-block:: go
 
      file := xlsx.OpenFile("test.xlsx")
      sheet := file.Sheet["Sheet 1"]
      tokens, err := xlsxformula.Tokenize(sheet.Rows[1].Cells[1].Formula())
+
+* ``xlsxformula.Parse(formula string) ([]*xlsxformula.Node, error)``
+
+  Split Excel formula into Token and parse structure. ``Parse()`` and ``Tokenize()`` are similar,
+  but ``Parse()`` creates AST. 
+
+  .. code-block:: go
+
+     file := xlsx.OpenFile("test.xlsx")
+     sheet := file.Sheet["Sheet 1"]
+     node, err := xlsxformula.Parse(sheet.Rows[1].Cells[1].Formula())
 
 License
 ------------
