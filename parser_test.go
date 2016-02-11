@@ -15,17 +15,6 @@ func TestParseSingleValue(t *testing.T) {
 	}
 }
 
-func TestParseNegativeSingleValue(t *testing.T) {
-	node, err := Parse("-10")
-	if err != nil {
-		t.Errorf("err should be nil, but %v", err)
-	} else if node.Type != SingleToken {
-		t.Errorf("node.Type is wrong: %s", node.Type.String())
-	} else if node.Token.Text != "-10" {
-		t.Errorf("node.Token.Text is wrong: %s", node.Token.Text)
-	}
-}
-
 func TestParseSimpleExpression(t *testing.T) {
 	node, err := Parse("10 + 20")
 	if err != nil {
@@ -36,6 +25,30 @@ func TestParseSimpleExpression(t *testing.T) {
 		t.Errorf("child count should be 3, but %d", len(node.Children))
 	} else if node.Children[0].Type != SingleToken || node.Children[1].Type != SingleToken || node.Children[2].Type != SingleToken {
 		t.Errorf("node Types are wrong: %s, %s, %s", node.Children[0].Type.String(), node.Children[1].Type.String(), node.Children[2].Type.String())
+	}
+}
+
+func TestParseUnaryNegativeSingleValue(t *testing.T) {
+	node, err := Parse("-10")
+	if err != nil {
+		t.Errorf("err should be nil, but %v", err)
+	} else if node.Type != Expression {
+		t.Errorf("node.Type is wrong: %s", node.Type.String())
+	} else if node.Children[0].Token.Text != "-" {
+		t.Errorf("node.Token.Text is wrong: %s", node.Token.Text)
+	} else if node.Children[1].Token.Text != "10" {
+		t.Errorf("node.Token.Text is wrong: %s", node.Token.Text)
+	}
+}
+
+func TestParseUnaryNegativeOperatorAndOperator(t *testing.T) {
+	node, err := Parse("10 * - -10")
+	if err != nil {
+		t.Errorf("err should be nil, but %v", err)
+	} else if node.Type != Expression {
+		t.Errorf("node.Type is wrong: %s", node.Type.String())
+	} else if len(node.Children) != 5 {
+		t.Errorf("node.Chilren should have 5 children but %d", len(node.Children))
 	}
 }
 
@@ -145,6 +158,13 @@ func TestParseErrorSequentialValues(t *testing.T) {
 
 func TestParseErrorSequentialOperators(t *testing.T) {
 	_, err := Parse("10 + +")
+	if err == nil {
+		t.Errorf("err should not be nil")
+	}
+}
+
+func TestParseErrorSequentialOperators2(t *testing.T) {
+	_, err := Parse("(10 + +)")
 	if err == nil {
 		t.Errorf("err should not be nil")
 	}

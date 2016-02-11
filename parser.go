@@ -2,6 +2,7 @@ package xlsxformula
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 )
 
@@ -90,6 +91,7 @@ func Parse(formula string) (*Node, error) {
 	stack := []*Node{currentNode}
 
 	acceptValue := true
+	var lastOperator *Token
 
 	for i < len(tokens) {
 		token := tokens[i]
@@ -139,6 +141,7 @@ func Parse(formula string) (*Node, error) {
 			parentFunction.Children = append(parentFunction.Children, nextParam)
 			currentNode = nextParam
 			acceptValue = true
+			lastOperator = token
 			i++
 		case Range:
 			if !acceptValue {
@@ -181,28 +184,15 @@ func Parse(formula string) (*Node, error) {
 			acceptValue = false
 			i++
 		case Operator:
-			if acceptValue {
-				if len(currentNode.Children) == 0 && isNumber(get(tokens, i+1)) {
-					nextToken := tokens[i+1]
-					currentNode.Children = append(currentNode.Children, &Node{
-						Type: SingleToken,
-						Token: &Token{
-							Type: nextToken.Type,
-							Text: "-" + nextToken.Text,
-							Line: token.Line,
-							Col:  token.Col,
-						},
-					})
-					i += 2
-				} else {
-					return nil, fmt.Errorf("Unexpected operator '%s' appears at %d:%d", token.Text, token.Line, token.Col)
-				}
+			if acceptValue && token.Text != "-" && token.Text != "+" {
+				return nil, fmt.Errorf("Unexpected operator '%s' appears at %d:%d", token.Text, token.Line, token.Col)
 			} else {
 				currentNode.Children = append(currentNode.Children, &Node{
 					Type:  SingleToken,
 					Token: token,
 				})
 				acceptValue = true
+				lastOperator = token
 				i++
 			}
 		case Comparator:
@@ -214,6 +204,7 @@ func Parse(formula string) (*Node, error) {
 				Token: token,
 			})
 			acceptValue = true
+			lastOperator = token
 			i++
 		case LParen:
 			if !acceptValue {
@@ -256,6 +247,12 @@ func Parse(formula string) (*Node, error) {
 			return nil, fmt.Errorf("Unknown token: %s", token.Type.String())
 		}
 	}
+	if acceptValue {
+		if lastOperator != nil {
+			return nil, fmt.Errorf("Any name, range or value is needed after '%s' at %d:%d", lastOperator.Text, lastOperator.Line, lastOperator.Col)
+		}
+		return nil, errors.New("Unknown error")
+	}
 	if len(stack) > 1 {
 		return nil, fmt.Errorf("The following nest defined at %d:%d is not closed yet: %s", stack[1].Token.Line, stack[1].Token.Col, stack[1].String())
 	}
@@ -271,10 +268,6 @@ func clean(node *Node) *Node {
 		}
 	}
 	return node
-}
-
-func isNumber(token *Token) bool {
-	return token.Type == Number
 }
 
 var isValue map[TokenType]bool = map[TokenType]bool{
