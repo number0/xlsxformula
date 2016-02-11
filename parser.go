@@ -10,7 +10,6 @@ type NodeType int
 const (
 	Function NodeType = iota
 	Expression
-	Compare
 	SingleToken
 )
 
@@ -20,8 +19,6 @@ func (nt NodeType) String() string {
 		return "Function"
 	case Expression:
 		return "Expression"
-	case Compare:
-		return "Compare"
 	case SingleToken:
 		return "SingleToken"
 	}
@@ -58,14 +55,6 @@ func (node Node) String() string {
 			buffer.WriteString(child.String())
 		}
 		buffer.WriteByte(')')
-		return buffer.String()
-	case Compare:
-		var buffer bytes.Buffer
-		buffer.WriteString(node.Children[0].String())
-		buffer.WriteByte(' ')
-		buffer.WriteString(node.Token.Text)
-		buffer.WriteByte(' ')
-		buffer.WriteString(node.Children[1].String())
 		return buffer.String()
 	case SingleToken:
 		return node.Token.Text
@@ -171,9 +160,9 @@ func Parse(formula string) (*Node, error) {
 			})
 			acceptValue = false
 			i++
-		case Integer:
+		case Number:
 			if !acceptValue {
-				return nil, fmt.Errorf("Unexpected integer '%s' appears at %d:%d", token.Text, token.Line, token.Col)
+				return nil, fmt.Errorf("Unexpected number '%s' appears at %d:%d", token.Text, token.Line, token.Col)
 			}
 			currentNode.Children = append(currentNode.Children, &Node{
 				Type:  SingleToken,
@@ -285,14 +274,13 @@ func clean(node *Node) *Node {
 }
 
 func isNumber(token *Token) bool {
-	return token.Type == Integer || token.Type == Float
+	return token.Type == Number
 }
 
 var isValue map[TokenType]bool = map[TokenType]bool{
-	Integer: true,
-	Float:   true,
-	String:  true,
-	Bool:    true,
-	Range:   true,
-	Name:    true,
+	Number: true,
+	String: true,
+	Bool:   true,
+	Range:  true,
+	Name:   true,
 }

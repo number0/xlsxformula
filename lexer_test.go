@@ -13,7 +13,7 @@ func TestOperatorsAndNumbers(t *testing.T) {
 		t.Errorf("Parse() should return 3 tokens, but %d tokens", len(tokens))
 		return
 	}
-	if tokens[0].Type != Integer || tokens[1].Type != Operator || tokens[2].Type != Integer {
+	if tokens[0].Type != Number || tokens[1].Type != Operator || tokens[2].Type != Number {
 		t.Errorf("Node type is wrong: %s %s %s", tokens[0].Type.String(), tokens[1].Type.String(), tokens[2].Type.String())
 	}
 }
@@ -27,7 +27,7 @@ func TestOperatorsAndFloats(t *testing.T) {
 		t.Errorf("Parse() should return 7 tokens, but %d tokens", len(tokens))
 		return
 	}
-	if tokens[0].Type != Float || tokens[2].Type != Float || tokens[4].Type != Float || tokens[6].Type != Float {
+	if tokens[0].Type != Number || tokens[2].Type != Number || tokens[4].Type != Number || tokens[6].Type != Number {
 		t.Errorf("Node type is wrong: %s %s %s %s", tokens[0].Type.String(), tokens[2].Type.String(), tokens[4].Type.String(), tokens[6].Type.String())
 	}
 	if tokens[1].Type != Operator || tokens[3].Type != Operator || tokens[5].Type != Operator {

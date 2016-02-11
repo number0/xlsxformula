@@ -9,8 +9,7 @@ import (
 type TokenType int
 
 const (
-	Integer    TokenType = iota // integer
-	Float                       // floating number
+	Number     TokenType = iota // number
 	String                      // double quoted string
 	Bool                        // TRUE/FALSE
 	Operator                    // +, -, *, /, ^, &
@@ -25,10 +24,8 @@ const (
 
 func (tt TokenType) String() string {
 	switch tt {
-	case Integer:
-		return "Integer"
-	case Float:
-		return "Float"
+	case Number:
+		return "Number"
 	case String:
 		return "String"
 	case Bool:
@@ -42,7 +39,7 @@ func (tt TokenType) String() string {
 	case Comma:
 		return "Comma"
 	case Comparator:
-		return "Compare"
+		return "Comparator"
 	case Name:
 		return "Name"
 	case Range:
@@ -211,16 +208,9 @@ func Tokenize(formula string) ([]*Token, error) {
 				text = string(source[index:])
 				index = len(source)
 			}
-			if _, err := strconv.Atoi(text); err == nil {
+			if _, err := strconv.ParseFloat(text, 64); err == nil {
 				tokens = append(tokens, &Token{
-					Type: Integer,
-					Text: text,
-					Line: line,
-					Col:  start - lineHead + 1,
-				})
-			} else if _, err := strconv.ParseFloat(text, 64); err == nil {
-				tokens = append(tokens, &Token{
-					Type: Float,
+					Type: Number,
 					Text: text,
 					Line: line,
 					Col:  start - lineHead + 1,
